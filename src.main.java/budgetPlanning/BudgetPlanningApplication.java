@@ -12,8 +12,9 @@ public class BudgetPlanningApplication {
 		pERSON myObject = gson.fromJson(jsonString, pERSON.class);
 		
 		System.out.println(myObject.getName());
+		System.out.println(myObject.getName());
 	}
 	
-
+	
 }
 
