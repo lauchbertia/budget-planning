@@ -1,5 +1,7 @@
 package budgetPlanning;
 
+import java.util.List;
+
 public class HandleData {
 	
 	private String month;
@@ -43,12 +45,23 @@ public class HandleData {
 	public void setValue(double value) {
 		this.value = value;
 	}
-	
-	public HandleData getDataFromMonth(HandleData data) {
-		if(data.month == "Januar") {
-			System.out.print(data);
-		}
-		return data;
-	}
 
+	
+	public List showFullData() {
+		 Data data = new Data();
+	     DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+	     List<HandleData> dataList = myObject.getData();
+	     for (HandleData item : dataList) {
+	            System.out.println("Month: " + item.getMonth());
+	            System.out.println("Day: " + item.getDay());
+	            System.out.println("Expenses: " + item.getExpenses());
+	            System.out.println("Value: " + item.getValue());
+	            System.out.println();
+	        }
+	     return dataList;
+    	}
+
+		
 }
+
+
