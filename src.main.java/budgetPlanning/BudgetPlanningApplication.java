@@ -14,6 +14,7 @@ public class BudgetPlanningApplication {
 		HandleData fullData = new HandleData();
 		fullData.showFullData();
 		
+		fullData.getSumOfBalanceOfMonth();
 	}
 }
 	

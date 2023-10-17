@@ -61,7 +61,32 @@ public class HandleData {
 	     return dataList;
     	}
 
+	public List getSumOfBalanceOfMonth () {
+		String balance;
+		double income;
+		double expenses;
+		Data data = new Data();
+	     DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+		List<HandleData> dataList = myObject.getData();
+		for (HandleData item : dataList) {
+			if (item.getExpenses() == true) {
+				System.out.println("TRUUEEEE");
 		
+			}
+            System.out.println(item.getMonth());
+            System.out.println(item.getDay());
+            System.out.println(item.getExpenses());
+            System.out.println(item.getValue());
+            System.out.println();
+        }
+     return dataList;
+	
+		
+		/*System.out.println("monatliche Einnahmen:" + income);
+		System.out.println("monatliche Ausgaben:" + expenses);
+		return balance; 
+		return "okidoki";*/
+	}
 }
 
 
