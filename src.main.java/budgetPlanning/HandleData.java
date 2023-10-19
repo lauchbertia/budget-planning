@@ -1,5 +1,7 @@
 package budgetPlanning;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class HandleData {
@@ -103,4 +105,51 @@ public class HandleData {
 		return dataList;
 
 	}
+	
+	
+	public List getMaxOfYear() {
+		Data data = new Data();
+		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+		List<HandleData> dataList = myObject.getData();
+		double value = 0;
+		double maxValue = 0;
+		
+		for (HandleData item : dataList) {
+			value = item.getValue();
+			
+			if (value > maxValue) {
+				maxValue = value;
+			}
+		}
+		
+		System.out.println("This is the max value: " + maxValue);
+		
+		return dataList;
+	}
+	
+	/*
+	public List getMinOfYear() {
+		Data data = new Data();
+		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+		List<HandleData> dataList = myObject.getData();
+		//double value;
+		double minValue = 500;
+		
+		Collections.max();
+		
+		for (HandleData item : dataList) {
+			double value = item.getValue();
+			//double minValue = item.getValue();
+			
+			if (value < minValue) {
+				minValue = value;
+			}
+		}
+		
+		System.out.println("This is the min value: " + minValue);
+		
+		return dataList;
+	}
+	*/
+	
 }
