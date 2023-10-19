@@ -1,7 +1,4 @@
 package budgetPlanning;
-import java.util.List;
-
-import com.google.gson.Gson;
 
 public class BudgetPlanningApplication {
 
@@ -15,6 +12,10 @@ public class BudgetPlanningApplication {
 		fullData.showFullData();
 		
 		fullData.getSumOfBalanceOfMonth();
+		
+		fullData.getMaxOfYear();
+		
+		fullData.getMinOfYear();
 	}
 }
 	
