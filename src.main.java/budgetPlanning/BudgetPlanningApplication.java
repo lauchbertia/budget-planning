@@ -15,7 +15,7 @@ public class BudgetPlanningApplication {
 		
 		fullData.getMaxOfYear();
 		
-		fullData.getMinOfYear();
+		//fullData.getMinOfYear();
 	}
 }
 	
