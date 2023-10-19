@@ -90,7 +90,7 @@ public class HandleData {
 			}
 			
 			if (item.getExpenses() == false) {
-				System.out.println("-------------FALSEEEEEE");
+				System.out.println("-------------FalsiFalsiFALSI");
 				System.out.println(item.getExpenses());
 				System.out.println(item.getValue());
 				expensesPlus = item.getValue();
