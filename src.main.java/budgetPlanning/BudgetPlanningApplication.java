@@ -9,13 +9,13 @@ public class BudgetPlanningApplication {
 		 */
 		
 		HandleData fullData = new HandleData();
-		fullData.showFullData();
+		//fullData.showFullData();
 		
-		fullData.getSumOfBalanceOfMonth();
+		//fullData.getSumOfBalanceOfMonth();
 		
-		fullData.getMaxOfYear();
+		//fullData.getMaxOfYear();
 		
-		//fullData.getMinOfYear();
+		fullData.displayMaxMinForMonths();
 	}
 }
 	
