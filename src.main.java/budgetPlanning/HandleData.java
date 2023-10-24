@@ -57,20 +57,26 @@ public class HandleData {
 	}
 
 	public List showFullData() {
+		System.out.println("------------------------------------------");
+		System.out.println("------------------ DATEN -----------------");
 		Data data = new Data();
 		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 		List<HandleData> dataList = myObject.getData();
 		for (HandleData item : dataList) {
-			System.out.println("Month: " + item.getMonth());
-			System.out.println("Day: " + item.getDay());
-			System.out.println("Expenses: " + item.getExpenses());
-			System.out.println("Value: " + item.getValue());
+			System.out.println("------------------------------------------");
+			System.out.println("Monat: " + item.getMonth());
+			System.out.println("------------------------------------------");
+			System.out.println("\tTag: " + item.getDay());
+			System.out.println("\tAusgaben: " + item.getExpenses());
+			System.out.println("\tWert: " + item.getValue());
 			System.out.println();
 		}
 		return dataList;
 	}
 
-	public void getSumOfBalanceOfMonth() {
+		public void getSumOfBalanceOfMonth() {
+			System.out.println("------------------------------------------");
+			System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
 		Data data = new Data();
 		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 		List<HandleData> dataList = myObject.getData();
@@ -87,9 +93,12 @@ public class HandleData {
 			if (!month.equals(currentMonth)) {
 				if (!currentMonth.isEmpty()) {
 					// Print the totals for the previous month
-					System.out.println("Month: " + currentMonth);
-					System.out.println("Income: " + totalIncome);
-					System.out.println("Expenses: " + totalExpenses);
+			        System.out.println("------------------------------------------");
+					System.out.println("Monat: " + currentMonth);
+			        System.out.println("------------------------------------------");
+					System.out.println("\tEinkommen: " + totalIncome);
+					System.out.println("\tAusgaben: " + totalExpenses);
+					System.out.println("");
 				}
 
 				// Reset totals for the new month
@@ -106,14 +115,16 @@ public class HandleData {
 		}
 
 		// Print the totals for the last month
-		System.out.println("");
-		System.out.println("Month: " + currentMonth);
-		System.out.println("Income: " + totalIncome);
-		System.out.println("Expenses: " + totalExpenses);
-		System.out.println("");
+        System.out.println("------------------------------------------");
+		System.out.println("Monat: " + currentMonth);
+        System.out.println("------------------------------------------");
+		System.out.println("\tEinkommen: " + totalIncome);
+		System.out.println("\tAusgaben: " + totalExpenses);
 	}
 
 	public List getMaxOfYear() {
+		System.out.println("------------------------------------------");
+		System.out.println("-------------- JAHR MAXIMUM --------------");
 		Data data = new Data();
 		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 		List<HandleData> dataList = myObject.getData();
@@ -128,29 +139,15 @@ public class HandleData {
 			}
 		}
 
-		System.out.println("This is the max value: " + maxValue);
+		System.out.println("Das ist der maximum Wert: " + maxValue);
 
 		return dataList;
 	}
 
-	/*
-	 * public List getMinOfYear() { Data data = new Data(); DataContainer myObject =
-	 * data.gson.fromJson(data.jsonString, DataContainer.class); List<HandleData>
-	 * dataList = myObject.getData(); //double value; double minValue = 500;
-	 * 
-	 * Collections.max();
-	 * 
-	 * for (HandleData item : dataList) { double value = item.getValue(); //double
-	 * minValue = item.getValue();
-	 * 
-	 * if (value < minValue) { minValue = value; } }
-	 * 
-	 * System.out.println("This is the min value: " + minValue);
-	 * 
-	 * return dataList; }
-	 */
 
 	public void displayMaxMinForMonths() {
+		System.out.println("------------------------------------------");
+		System.out.println("------- MAXIMUM & MINIMUM PRO MONAT ------");
 	    Data data = new Data();
 	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 	    List<HandleData> dataList = myObject.getData();
@@ -196,9 +193,9 @@ public class HandleData {
 	    // Output the results for each month
 	    for (int i = 0; i < 12; i++) {
 	        String month = months[i];
-	        System.out.println("----------------------------------------");
+	        System.out.println("------------------------------------------");
 	        System.out.println(month);
-	        System.out.println("----------------------------------------");
+	        System.out.println("------------------------------------------");
 	        System.out.println("\tEinkommen");
 	        System.out.println("\t \tmaximum: " + maxIncomeByMonth[i]);
 	        System.out.println("\t \tminimum: " + minIncomeByMonth[i]);
@@ -206,11 +203,77 @@ public class HandleData {
 	        System.out.println("\t \tmaximum: " + maxExpenseByMonth[i]);
 	        System.out.println("\t \tminimum: " + minExpenseByMonth[i]);
 	        System.out.println("");
-	        
-	    
-	
 		}
-	    
-	    
+	}
+	
+	
+	public void savingsPotencial() {
+		System.out.println("------------------------------------------");
+		System.out.println("-------------- SPARPOTENZIAL -------------");
+		Data data = new Data();
+		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+		List<HandleData> dataList = myObject.getData();
+
+		String currentMonth = "";
+		double totalIncome = 0;
+		double totalExpenses = 0;
+		double total = 0;
+
+		for (HandleData item : dataList) {
+			String month = item.getMonth();
+			double value = item.getValue();
+			boolean isExpense = item.getExpenses();
+
+			if (!month.equals(currentMonth)) {
+				if (!currentMonth.isEmpty()) {
+					// Print the totals for the previous month
+					System.out.println("------------------------------------------");
+					System.out.println("Monat: " + currentMonth);
+					System.out.println("------------------------------------------");
+					System.out.println("\tEinkommen: " + totalIncome);
+					System.out.println("\tAusgaben: " + totalExpenses);
+					
+					total = totalIncome - totalExpenses;
+					System.out.println("\tDifferenz: " + total);
+					
+					if (total < 10) {
+						System.out.println("\t \t --> Kein Sparpotenzial");
+					} else if (total < 200) {
+						System.out.println("\t \t --> Mittel Sparpotenzial");
+					} else {
+						System.out.println("\t \t --> Hohes Sparpotenzial");
+					}
+					
+				}
+
+				// Reset totals for the new month
+				currentMonth = month;
+				totalIncome = 0;
+				totalExpenses = 0;
+			}
+
+			if (isExpense) {
+				totalExpenses += value;
+			} else {
+				totalIncome += value;
+			}
+		}
+
+		// Print the totals for the last month
+		System.out.println("------------------------------------------");
+		System.out.println("Monat: " + currentMonth);
+		System.out.println("------------------------------------------");
+		System.out.println("\tEinkommen: " + totalIncome);
+		System.out.println("\tAusgaben: " + totalExpenses);
+		total = totalIncome - totalExpenses;
+		System.out.println("\tDifferenz: " + total);
+		if (total < 10) {
+			System.out.println("\t \t --> Kein Sparpotenzial");
+		} else if (total < 200) {
+			System.out.println("\t \t --> Mittel Sparpotenzial");
+		} else {
+			System.out.println("\t \t --> Hohes Sparpotenzial");
+		}
+		System.out.println("");
 	}
 }

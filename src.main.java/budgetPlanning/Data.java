@@ -53,7 +53,7 @@ public class Data {
 			+ "    {\"month\": \"Februar\", \"day\": 18, \"expenses\": true, \"value\": 180.0},\n"
 			+ "    {\"month\": \"Februar\", \"day\": 19, \"expenses\": true, \"value\": 70.0},\n"
 			+ "    {\"month\": \"Februar\", \"day\": 19, \"expenses\": true, \"value\": 90.0},\n"
-			+ "    {\"month\": \"Februar\", \"day\": 19, \"expenses\": true, \"value\": 50.0}\n"
+			+ "    {\"month\": \"April\", \"day\": 19, \"expenses\": true, \"value\": 50.0}\n"
 			+ "  ]\n"
 			+ "}";
 }
