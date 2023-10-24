@@ -113,78 +113,7 @@ public class HandleData {
 	}
 	
 
-	public List getSumOfBalanceOfMonth2() {
-		String balance;
-		double income = 0;
-		double expenses = 0;
-		double incomePlus = 0;
-		double expensesPlus = 0;
-		String currentMonth = "";
-
-		Data data = new Data();
-		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
-		List<HandleData> dataList = myObject.getData();
-		for (HandleData item : dataList) {
-			 String month = item.getMonth();
-			 double value = item.getValue();
-		     boolean isExpense = item.getExpenses();
-			/*
-			 * if (item.getMonth().equals("Januar")) { }
-			 */
-			 
-			 if (!month.equals(currentMonth)) {
-				 if (!currentMonth.isEmpty()) {
-		                // Print the totals for the previous month
-		                System.out.println("Month: " + currentMonth);
-		                System.out.println("Income: " + income);
-		                System.out.println("Expenses: " + expenses);
-		            }
-				 
-				 currentMonth = month;
-		         income = 0;
-		         expenses = 0;
-		         
-		         if (isExpense) {
-		             expenses += value;
-		         } else {
-		             income += value;
-		         }
-			 }
-			 
-			 System.out.println("Month: " + currentMonth);
-			 System.out.println("Income: " + income);
-			 System.out.println("Expenses: " + expenses);
-
-			 /*
-			if (item.getExpenses() == true) {
-				System.out.println("TRUUEEEE");
-				System.out.println(item.getExpenses());
-				System.out.println(item.getValue());
-				incomePlus = item.getValue();
-
-				income = income + incomePlus;
-			}
-
-			if (item.getExpenses() == false) {
-				System.out.println("-------------FalsiFalsiFALSI");
-				System.out.println(item.getExpenses());
-				System.out.println(item.getValue());
-				expensesPlus = item.getValue();
-
-				expenses = expenses + expensesPlus;
-			}
-			// System.out.println(item.getMonth());
-			 * 
-			 */
-			
-
-		}
-		
-		//System.out.println("Income: " + income);
-		//System.out.println("Expenses: " + expenses);
-		return dataList;
-
-	}
+	
 
 	public List getMaxOfYear() {
 		Data data = new Data();
