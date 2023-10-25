@@ -3,7 +3,12 @@ package budgetPlanning;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 public class HandleData {
 
@@ -56,7 +61,7 @@ public class HandleData {
 		this.value = value;
 	}
 
-	public List showFullData() {
+	public List<HandleData> showFullData() {
 		System.out.println("------------------------------------------");
 		System.out.println("------------------ DATEN -----------------");
 		Data data = new Data();
@@ -74,55 +79,39 @@ public class HandleData {
 		return dataList;
 	}
 
-		public void getSumOfBalanceOfMonth() {
-			System.out.println("------------------------------------------");
-			System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
-		Data data = new Data();
-		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
-		List<HandleData> dataList = myObject.getData();
+	public void getSumOfBalanceOfMonth() {
+	    System.out.println("------------------------------------------");
+	    System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
 
-		String currentMonth = "";
-		double totalIncome = 0;
-		double totalExpenses = 0;
+	    Data data = new Data();
+	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+	    List<HandleData> dataList = myObject.getData();
 
-		for (HandleData item : dataList) {
-			String month = item.getMonth();
-			double value = item.getValue();
-			boolean isExpense = item.getExpenses();
+	    Map<String, Map<Boolean, Double>> monthlySum = new LinkedHashMap<>();
 
-			if (!month.equals(currentMonth)) {
-				if (!currentMonth.isEmpty()) {
-					// Print the totals for the previous month
-			        System.out.println("------------------------------------------");
-					System.out.println("Monat: " + currentMonth);
-			        System.out.println("------------------------------------------");
-					System.out.println("\tEinkommen: " + totalIncome);
-					System.out.println("\tAusgaben: " + totalExpenses);
-					System.out.println("");
-				}
+	    for (HandleData item : dataList) {
+	        String month = item.getMonth();
+	        boolean isExpense = item.getExpenses();
+	        double value = item.getValue();
 
-				// Reset totals for the new month
-				currentMonth = month;
-				totalIncome = 0;
-				totalExpenses = 0;
-			}
+	        monthlySum
+	            .computeIfAbsent(month, k -> new LinkedHashMap<>())
+	            .merge(isExpense, value, Double::sum);
+	    }
 
-			if (isExpense) {
-				totalExpenses += value;
-			} else {
-				totalIncome += value;
-			}
-		}
+	    monthlySum.forEach((month, categorySum) -> {
+	        System.out.println("------------------------------------------");
+	        System.out.println("Monat: " + month);
+	        System.out.println("------------------------------------------");
 
-		// Print the totals for the last month
-        System.out.println("------------------------------------------");
-		System.out.println("Monat: " + currentMonth);
-        System.out.println("------------------------------------------");
-		System.out.println("\tEinkommen: " + totalIncome);
-		System.out.println("\tAusgaben: " + totalExpenses);
+	        System.out.println("\tEinkommen: " + categorySum.getOrDefault(false, 0.0));
+	        System.out.println("\tAusgaben: " + categorySum.getOrDefault(true, 0.0));
+	        System.out.println("");
+	    });
 	}
 
-	public List getMaxOfYear() {
+
+	public List<HandleData> getMaxOfYear() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- JAHR MAXIMUM --------------");
 		Data data = new Data();

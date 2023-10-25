@@ -78,7 +78,7 @@ public class Data {
 			+ "    {\"month\": \"Mai\", \"day\": 12, \"expenses\": true, \"value\": 200.0},\n"
 			+ "    {\"month\": \"Mai\", \"day\": 13, \"expenses\": true, \"value\": 90.0},\n"
 			+ "    {\"month\": \"Mai\", \"day\": 14, \"expenses\": true, \"value\": 170.0},\n"
-			+ "    {\"month\": \"Mai\", \"day\": 19, \"expenses\": true, \"value\": 50.0}\n"
+			+ "    {\"month\": \"Mai\", \"day\": 19, \"expenses\": false, \"value\": 500.0}\n"
 			+ "  ]\n"
 			+ "}";
 }
