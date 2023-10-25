@@ -86,7 +86,8 @@ public class HandleData {
 	    Data data = new Data();
 	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 	    List<HandleData> dataList = myObject.getData();
-
+	    
+	    // LinkedHashMap: keeps the order of months
 	    Map<String, Map<Boolean, Double>> monthlySum = new LinkedHashMap<>();
 
 	    for (HandleData item : dataList) {
@@ -94,11 +95,16 @@ public class HandleData {
 	        boolean isExpense = item.getExpenses();
 	        double value = item.getValue();
 
+	        // calculate (compute) the monthly sums with LinkedHashMap
+	        // If the month doesn't exist in the outer map, create a new LinkedHashMap
+	        // If the category (expense or income) doesn't exist in the inner map, create a new entry with the value
+	        // If the category already exists, merge the value using Double::sum
 	        monthlySum
 	            .computeIfAbsent(month, k -> new LinkedHashMap<>())
 	            .merge(isExpense, value, Double::sum);
 	    }
 
+	    // Iterate over the LinkedHashMap to print the results
 	    monthlySum.forEach((month, categorySum) -> {
 	        System.out.println("------------------------------------------");
 	        System.out.println("Monat: " + month);
@@ -135,64 +141,52 @@ public class HandleData {
 
 
 	public void displayMaxMinForMonths() {
-		System.out.println("------------------------------------------");
-		System.out.println("------- MAXIMUM & MINIMUM PRO MONAT ------");
+	    System.out.println("------------------------------------------");
+	    System.out.println("------- MAXIMUM & MINIMUM PRO MONAT ------");
 	    Data data = new Data();
 	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 	    List<HandleData> dataList = myObject.getData();
 
 	    String[] months = {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"};
 
-	    // Initialize arrays to store max and min values for each month
-	    double[] maxIncomeByMonth = new double[12];
-	    double[] minIncomeByMonth = new double[12];
-	    double[] maxExpenseByMonth = new double[12];
-	    double[] minExpenseByMonth = new double[12];
-	    
-	 // Initialize minIncomeByMonth and minExpenseByMonth with high initial values
-	    Arrays.fill(minIncomeByMonth, Double.MAX_VALUE);
-	    Arrays.fill(minExpenseByMonth, Double.MAX_VALUE);
+	    // Map to store statistics (collecting max/ min) for each month
+	    // the statistics map has submaps for each category (expenses -> true, income -> false)
+	    Map<String, Map<Boolean, DoubleSummaryStatistics>> monthStatistics = new HashMap<>();
 
-	    for (HandleData item : dataList) {
+	    // Initialize the map with empty statistics for each month
+	    Arrays.stream(months).forEach(month -> {
+	        Map<Boolean, DoubleSummaryStatistics> statistics = new HashMap<>();
+	        statistics.put(true, new DoubleSummaryStatistics());
+	        statistics.put(false, new DoubleSummaryStatistics());
+	        monthStatistics.put(month, statistics);
+	    });
+
+	    // Calculate statistics using streams
+	    dataList.forEach(item -> {
 	        String month = item.getMonth();
-	        int monthIndex = Arrays.asList(months).indexOf(month);
 	        boolean isExpense = item.getExpenses();
-
 	        double value = item.getValue();
 
-	        // Update max and min values for the specific month
-	        if (!isExpense) {
-	            if (value > maxIncomeByMonth[monthIndex]) {
-	                maxIncomeByMonth[monthIndex] = value;
-	            }
-	            if (value < minIncomeByMonth[monthIndex]) {
-	                minIncomeByMonth[monthIndex] = value;
-	                
-	            }
-	        } else {
-	            if (value > maxExpenseByMonth[monthIndex]) {
-	                maxExpenseByMonth[monthIndex] = value;
-	            }
-	            if (value < minExpenseByMonth[monthIndex]) {
-	                minExpenseByMonth[monthIndex] = value;
-	            }
-	        }
-	    }
+	        Map<Boolean, DoubleSummaryStatistics> statistics = monthStatistics.get(month);
+	        statistics.get(isExpense).accept(value);
+	    });
 
 	    // Output the results for each month
-	    for (int i = 0; i < 12; i++) {
-	        String month = months[i];
+	    Arrays.stream(months).forEach(month -> {
 	        System.out.println("------------------------------------------");
 	        System.out.println(month);
 	        System.out.println("------------------------------------------");
+
 	        System.out.println("\tEinkommen");
-	        System.out.println("\t \tmaximum: " + maxIncomeByMonth[i]);
-	        System.out.println("\t \tminimum: " + minIncomeByMonth[i]);
-        	System.out.println("\tAusgaben");
-	        System.out.println("\t \tmaximum: " + maxExpenseByMonth[i]);
-	        System.out.println("\t \tminimum: " + minExpenseByMonth[i]);
-	        System.out.println("");
-		}
+	        System.out.println("\t \tmaximum: " + monthStatistics.get(month).get(false).getMax());
+	        System.out.println("\t \tminimum: " + monthStatistics.get(month).get(false).getMin());
+
+	        System.out.println("\tAusgaben");
+	        System.out.println("\t \tmaximum: " + monthStatistics.get(month).get(true).getMax());
+	        System.out.println("\t \tminimum: " + monthStatistics.get(month).get(true).getMin());
+
+	        System.out.println();
+	    });
 	}
 	
 	
