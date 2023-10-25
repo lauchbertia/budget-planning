@@ -171,7 +171,7 @@ public class HandleData {
 	        statistics.get(isExpense).accept(value);
 	    });
 
-	    // Output the results for each month
+	    // Print the results for each month
 	    Arrays.stream(months).forEach(month -> {
 	        System.out.println("------------------------------------------");
 	        System.out.println(month);
@@ -191,72 +191,51 @@ public class HandleData {
 	
 	
 	public void savingsPotencial() {
-		System.out.println("------------------------------------------");
-		System.out.println("-------------- SPARPOTENZIAL -------------");
-		Data data = new Data();
-		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
-		List<HandleData> dataList = myObject.getData();
+	    System.out.println("------------------------------------------");
+	    System.out.println("-------------- SPARPOTENZIAL -------------");
+	    Data data = new Data();
+	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+	    List<HandleData> dataList = myObject.getData();
 
-		String currentMonth = "";
-		double totalIncome = 0;
-		double totalExpenses = 0;
-		double total = 0;
+	    // Store the monthly totals 
+	    // preserve the order of the months with LinkedHashMap
+	    Map<String, Double> monthTotals = new LinkedHashMap<>();
 
-		for (HandleData item : dataList) {
-			String month = item.getMonth();
-			double value = item.getValue();
-			boolean isExpense = item.getExpenses();
+	    // Calculate the monthly totals
+	    dataList.forEach(item -> {
+	        String month = item.getMonth();
+	        double value = item.getValue();
+	        boolean isExpense = item.getExpenses();
 
-			if (!month.equals(currentMonth)) {
-				if (!currentMonth.isEmpty()) {
-					// Print the totals for the previous month
-					System.out.println("------------------------------------------");
-					System.out.println("Monat: " + currentMonth);
-					System.out.println("------------------------------------------");
-					System.out.println("\tEinkommen: " + totalIncome);
-					System.out.println("\tAusgaben: " + totalExpenses);
-					
-					total = totalIncome - totalExpenses;
-					System.out.println("\tDifferenz: " + total);
-					
-					if (total < 10) {
-						System.out.println("\t \t --> Kein Sparpotenzial");
-					} else if (total < 200) {
-						System.out.println("\t \t --> Mittel Sparpotenzial");
-					} else {
-						System.out.println("\t \t --> Hohes Sparpotenzial");
-					}
-					
-				}
+	        // initialize a monthly total
+	        monthTotals.putIfAbsent(month, 0.0);
 
-				// Reset totals for the new month
-				currentMonth = month;
-				totalIncome = 0;
-				totalExpenses = 0;
-			}
+	        // Update the total for the current month
+	        monthTotals.compute(month, (key, total) -> isExpense ? total - value : total + value);
+	    });
 
-			if (isExpense) {
-				totalExpenses += value;
-			} else {
-				totalIncome += value;
-			}
-		}
+	    // Print the summary for each month
+	    monthTotals.forEach((month, total) -> printMonthSummary(month, total));
+	}
 
-		// Print the totals for the last month
-		System.out.println("------------------------------------------");
-		System.out.println("Monat: " + currentMonth);
-		System.out.println("------------------------------------------");
-		System.out.println("\tEinkommen: " + totalIncome);
-		System.out.println("\tAusgaben: " + totalExpenses);
-		total = totalIncome - totalExpenses;
-		System.out.println("\tDifferenz: " + total);
-		if (total < 10) {
-			System.out.println("\t \t --> Kein Sparpotenzial");
-		} else if (total < 200) {
-			System.out.println("\t \t --> Mittel Sparpotenzial");
-		} else {
-			System.out.println("\t \t --> Hohes Sparpotenzial");
-		}
-		System.out.println("");
+	private void printMonthSummary(String month, double total) {
+	    System.out.println("------------------------------------------");
+	    System.out.println("Monat: " + month);
+	    System.out.println("------------------------------------------");
+	    System.out.println("\tEinkommen: " + Math.max(total, 0));
+	    System.out.println("\tAusgaben: " + Math.max(-total, 0));
+	    System.out.println("\tDifferenz: " + total);
+	    System.out.println("\t \t --> " + getSavingsPotencial(total));
+	    System.out.println();
+	}
+
+	private String getSavingsPotencial(double total) {
+	    if (total < 10) {
+	        return "Kein Sparpotenzial";
+	    } else if (total < 200) {
+	        return "Mittel Sparpotenzial";
+	    } else {
+	        return "Hohes Sparpotenzial";
+	    }
 	}
 }
