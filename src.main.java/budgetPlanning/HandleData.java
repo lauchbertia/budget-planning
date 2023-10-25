@@ -61,6 +61,10 @@ public class HandleData {
 		this.value = value;
 	}
 
+	/**
+	 * Shows all the data of each day (imperative)
+	 * @return datalist
+	 */
 	public List<HandleData> showFullData() {
 		System.out.println("------------------------------------------");
 		System.out.println("------------------ DATEN -----------------");
@@ -79,6 +83,10 @@ public class HandleData {
 		return dataList;
 	}
 
+	
+	/**
+	 * Shows the sum of income and expenses of each each month
+	 */
 	public void getSumOfBalanceOfMonth() {
 	    System.out.println("------------------------------------------");
 	    System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
@@ -117,6 +125,10 @@ public class HandleData {
 	}
 
 
+	/**
+	 * Gets the max value of the year (imparative)
+	 * @return
+	 */
 	public List<HandleData> getMaxOfYear() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- JAHR MAXIMUM --------------");
@@ -140,6 +152,9 @@ public class HandleData {
 	}
 
 
+	/**
+	 * Shows the maximum & minimum for each month
+	 */
 	public void displayMaxMinForMonths() {
 	    System.out.println("------------------------------------------");
 	    System.out.println("------- MAXIMUM & MINIMUM PRO MONAT ------");
@@ -161,13 +176,17 @@ public class HandleData {
 	        monthStatistics.put(month, statistics);
 	    });
 
-	    // Calculate statistics using streams
+	    // Calculate statistics (max & min values) for each month
 	    dataList.forEach(item -> {
 	        String month = item.getMonth();
 	        boolean isExpense = item.getExpenses();
 	        double value = item.getValue();
 
+	        // Get the statistics map for the current month
+	        // Map contains statistics (expenses & income) for that month
 	        Map<Boolean, DoubleSummaryStatistics> statistics = monthStatistics.get(month);
+	        // Updates the statistics (for current month & expense category)
+	        // accept(): updates max/ min value for income/ expense
 	        statistics.get(isExpense).accept(value);
 	    });
 
@@ -190,6 +209,9 @@ public class HandleData {
 	}
 	
 	
+	/**
+	 * Shows the user their savings potencial
+	 */
 	public void savingsPotencial() {
 	    System.out.println("------------------------------------------");
 	    System.out.println("-------------- SPARPOTENZIAL -------------");
