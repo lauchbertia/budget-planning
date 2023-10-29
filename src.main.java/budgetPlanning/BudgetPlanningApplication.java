@@ -5,15 +5,16 @@ public class BudgetPlanningApplication {
 	public static void main(String[] args) {
 		
 		/**
-		 * @author Nina Lareida & Sabrina Boccia
+		 * @version 1.0
+		 *
+		 * @author Nina Lareida
+		 * @author Sabrina Boccia
+		 * 
 		 */
 		
 		HandleData fullData = new HandleData();
-		//fullData.showFullData();
-		
+		//fullData.showFullData();	
 		//fullData.getSumOfBalanceOfMonth();
-		
-		
 		//fullData.getMaxOfYear();
 		
 		//fullData.displayMaxMinForMonths();

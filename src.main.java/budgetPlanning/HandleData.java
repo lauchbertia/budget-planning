@@ -1,10 +1,10 @@
 package budgetPlanning;
-
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
+/**
+ * Constructor of Object
+ */
 public class HandleData {
 
 	private String month;
@@ -23,40 +23,88 @@ public class HandleData {
 		this.expenses = expenses;
 		this.value = value;
 	}
+	
+	/**
+	 * Get the month
+	 * @return String with Name of Month
+	 */
 
 	public String getMonth() {
 		return month;
 	}
+	
+	/**
+	 * Sets the month
+	 * @param month as String
+	 */
 
 	public void setMonth(String month) {
 		this.month = month;
 	}
+	
+	/**
+	 * Gets the wanted number of a day within a month
+	 * @return day as a number (integer)
+	 */
 
 	public int getDay() {
 		return day;
 	}
+	
+	/**
+	 * sets the day
+	 * @param day
+	 */
 
 	public void setDay(int day) {
 		this.day = day;
 	}
+	
+	/**
+	 * Gets the all the expenses of every month
+	 * @return expenses as an boolean value. If expenses are false, then its displayed as income
+	 */
 
 	public Boolean getExpenses() {
 		return expenses;
 	}
+	
+	/**
+	 * sets expenses as true or false
+	 * @param expenses
+	 */
 
 	public void setExpenses(Boolean expenses) {
 		this.expenses = expenses;
 	}
+	
+	/**
+	 * gets the value of data object
+	 * @return value as an double
+	 */
 
 	public double getValue() {
 		return value;
 	}
+	
+	/**
+	 * sets the value of data object
+	 * @param value
+	 */
 
 	public void setValue(double value) {
 		this.value = value;
 	}
+	
+	/**
+	 * shows all Data from the List from the JSON String
+	 * used GSON Library
+	 * Container for Data see DataContainer-Class
+	 * 
+	 * @return dataList, a List of all the Data
+	 */
 
-	public List showFullData() {
+	public List<HandleData> showFullData() {
 		System.out.println("------------------------------------------");
 		System.out.println("------------------ DATEN -----------------");
 		Data data = new Data();
@@ -73,6 +121,11 @@ public class HandleData {
 		}
 		return dataList;
 	}
+	
+	/**
+	 * Displays the sum of the balance monthly.
+	 * 
+	 */
 
 		public void getSumOfBalanceOfMonth() {
 			System.out.println("------------------------------------------");
@@ -121,8 +174,14 @@ public class HandleData {
 		System.out.println("\tEinkommen: " + totalIncome);
 		System.out.println("\tAusgaben: " + totalExpenses);
 	}
+		
+		/**
+		 * Gets the highest value of the year - either income or expense.
+		 * 
+		 * @return dataList
+		 */
 
-	public List getMaxOfYear() {
+	public List<HandleData> getMaxOfYear() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- JAHR MAXIMUM --------------");
 		Data data = new Data();
@@ -143,6 +202,11 @@ public class HandleData {
 
 		return dataList;
 	}
+	
+	/**
+	 * Shows the maximum of income and maximum of expenses for every month within one year
+	 * 
+	 */
 
 
 	public void displayMaxMinForMonths() {
@@ -206,6 +270,13 @@ public class HandleData {
 		}
 	}
 	
+	
+	/**
+	 * Shows the potential of saving money for every month as String:
+	 *  < 10 "no potential"
+	 * 	< 200 "little potential"
+	 * 	bigger than 200 is great potential
+	 */
 	
 	public void savingsPotencial() {
 		System.out.println("------------------------------------------");
