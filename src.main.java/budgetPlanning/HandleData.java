@@ -138,40 +138,39 @@ public class HandleData {
 	/**
 	 * Shows the sum of income and expenses of each each month
 	 */
+	
 	public void getSumOfBalanceOfMonth() {
-		System.out.println("------------------------------------------");
-		System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
+	    System.out.println("------------------------------------------");
+	    System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
 
-		Data data = new Data();
-		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
-		List<HandleData> dataList = myObject.getData();
+	    Data data = new Data();
+	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+	    List<HandleData> dataList = myObject.getData();
 
-		// LinkedHashMap: keeps the order of months
-		Map<String, Map<Boolean, Double>> monthlySum = new LinkedHashMap<>();
+	    // Gruppierung und Summierung der Daten
+	    Map<String, Map<Boolean, Double>> monthlySum = dataList.stream()
+	            .collect(Collectors.groupingBy(
+	                    HandleData::getMonth,
+	                    LinkedHashMap::new,
+	                    Collectors.groupingBy(
+	                            HandleData::getExpenses,
+	                            Collectors.summingDouble(HandleData::getValue)
+	                    )
+	            ));
 
-		for (HandleData item : dataList) {
-			String month = item.getMonth();
-			boolean isExpense = item.getExpenses();
-			double value = item.getValue();
+	    // Iteration und Ausgabe der Ergebnisse
+	    monthlySum.forEach((month, categorySum) -> {
+	        System.out.println("------------------------------------------");
+	        System.out.println("Monat: " + month);
+	        System.out.println("------------------------------------------");
 
-			// calculate (compute) the monthly sums with LinkedHashMap
-			// If the month doesn't exist in the outer map, create a new LinkedHashMap
-			// If the category (expense or income) doesn't exist in the inner map, create a
-			// new entry with the value
-			// If the category already exists, merge the value using Double::sum
-			monthlySum.computeIfAbsent(month, k -> new LinkedHashMap<>()).merge(isExpense, value, Double::sum);
-		}
+	        categorySum.forEach((isExpense, value) -> {
+	            String category = isExpense ? "Ausgaben" : "Einkommen";
+	            System.out.println("\t" + category + ": " + value);
+	        });
 
-		// Iterate over the LinkedHashMap to print the results
-		monthlySum.forEach((month, categorySum) -> {
-			System.out.println("------------------------------------------");
-			System.out.println("Monat: " + month);
-			System.out.println("------------------------------------------");
-
-			System.out.println("\tEinkommen: " + categorySum.getOrDefault(false, 0.0));
-			System.out.println("\tAusgaben: " + categorySum.getOrDefault(true, 0.0));
-			System.out.println("");
-		});
+	        System.out.println();
+	    });
 	}
 
 	public double getMaxOfYear() {

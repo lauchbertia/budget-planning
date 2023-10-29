@@ -15,7 +15,8 @@ public class BudgetPlanningApplication {
 		HandleData fullData = new HandleData();
 		//fullData.showFullData();	
 		//fullData.getSumOfBalanceOfMonth();
-		fullData.getMaxOfYear();
+		fullData.getSumOfBalanceOfMonth();
+		//fullData.getMaxOfYear();
 		
 		//fullData.displayMaxMinForMonths();
 		//fullData.savingsPotencial();
