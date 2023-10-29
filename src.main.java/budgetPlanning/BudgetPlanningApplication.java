@@ -5,7 +5,11 @@ public class BudgetPlanningApplication {
 	public static void main(String[] args) {
 		
 		/**
-		 * @author Nina Lareida & Sabrina Boccia
+		 * @version 1.0
+		 *
+		 * @author Nina Lareida
+		 * @author Sabrina Boccia
+		 * 
 		 */
 		
 		HandleData fullData = new HandleData();
