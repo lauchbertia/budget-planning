@@ -174,26 +174,19 @@ public class HandleData {
 		});
 	}
 
-	public List<HandleData> getMaxOfYear() {
+	public double getMaxOfYear() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- JAHR MAXIMUM --------------");
 		Data data = new Data();
 		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 		List<HandleData> dataList = myObject.getData();
-		double value = 0;
-		double maxValue = 0;
+		 Optional<Double> max = dataList.stream()
+		            .map(HandleData::getValue)
+		            .reduce(Double::max);
+		 
+		 		System.out.println("Das ist der maximum Wert: " + max.orElse(0.0));
 
-		for (HandleData item : dataList) {
-			value = item.getValue();
-
-			if (value > maxValue) {
-				maxValue = value;
-			}
-		}
-
-		System.out.println("Das ist der maximum Wert: " + maxValue);
-
-		return dataList;
+		        return max.orElse(0.0);
 	}
 
 	/**
