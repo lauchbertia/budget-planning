@@ -1,16 +1,17 @@
 package budgetPlanning;
 
+/**
+ * This is the main class for the Budget Planning Application
+ * 
+ * @version 1.0
+ *
+ * @author Nina Lareida
+ * @author Sabrina Boccia
+ * 
+ */
 public class BudgetPlanningApplication {
 
 	public static void main(String[] args) {
-		
-		/**
-		 * @version 1.0
-		 *
-		 * @author Nina Lareida
-		 * @author Sabrina Boccia
-		 * 
-		 */
 		
 		HandleData fullData = new HandleData();
 		//fullData.showFullData();	
@@ -21,6 +22,3 @@ public class BudgetPlanningApplication {
 		fullData.savingsPotencial();
 	}
 }
-	
-
-
