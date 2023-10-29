@@ -106,9 +106,10 @@ public class HandleData {
 	}
 
 	/**
-	 * shows all the data for each day
+	 * shows all Data from the List from the JSON String used GSON Library Container
+	 * for Data see DataContainer-Class
 	 * 
-	 * @return dataList
+	 * @return dataList, a List of all the Data
 	 */
 	public List<HandleData> showFullData() {
 		System.out.println("------------------------------------------");
@@ -160,7 +161,7 @@ public class HandleData {
 	}
 
 	/**
-	 * Gets the max value of the year
+	 * Gets the highest value of the year - either income or expense.
 	 * 
 	 * @return max value of the year
 	 */
@@ -238,7 +239,8 @@ public class HandleData {
 	}
 
 	/**
-	 * Shows the savings potential for each month
+	 * Shows the potential of saving money for every month as String: < 10 "no
+	 * potential" < 200 "little potential" bigger than 200 is great potential
 	 */
 	public void savingsPotential() {
 		System.out.println("------------------------------------------");
