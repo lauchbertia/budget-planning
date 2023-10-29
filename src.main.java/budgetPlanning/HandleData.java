@@ -223,7 +223,7 @@ public class HandleData {
 	    // preserve the order of the months with LinkedHashMap
 	    Map<String, Double> monthTotals = new LinkedHashMap<>();
 
-	    // Calculate the monthly totals
+	    // Calculate the monthly totals 
 	    dataList.forEach(item -> {
 	        String month = item.getMonth();
 	        double value = item.getValue();
