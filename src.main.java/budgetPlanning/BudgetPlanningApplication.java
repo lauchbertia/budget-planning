@@ -19,6 +19,6 @@ public class BudgetPlanningApplication {
 		//fullData.getMaxOfYear();
 		
 		//fullData.displayMaxMinForMonths();
-		fullData.savingsPotencial();
+		fullData.savingsPotential();
 	}
 }
