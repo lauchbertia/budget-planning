@@ -274,7 +274,7 @@ public class HandleData {
 	 * Shows the potential of saving money for every month as String: < 10 "no
 	 * potential" < 200 "little potential" bigger than 200 is great potential
 	 */
-	public void savingsPotencial() {
+	public void savingsPotential() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- SPARPOTENZIAL -------------");
 		Data data = new Data();
