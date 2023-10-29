@@ -1,27 +1,25 @@
 package budgetPlanning;
 
+/**
+ * This is the main class for the Budget Planning Application
+ * 
+ * @version 1.0
+ *
+ * @author Nina Lareida
+ * @author Sabrina Boccia
+ * 
+ */
 public class BudgetPlanningApplication {
 
 	public static void main(String[] args) {
-		
-		/**
-		 * @version 1.0
-		 *
-		 * @author Nina Lareida
-		 * @author Sabrina Boccia
-		 * 
-		 */
-		
+
 		HandleData fullData = new HandleData();
-		//fullData.showFullData();	
+		// fullData.showFullData();
+		// fullData.getSumOfBalanceOfMonth();
 		//fullData.getSumOfBalanceOfMonth();
-		fullData.getSumOfBalanceOfMonth();
-		//fullData.getMaxOfYear();
-		
-		//fullData.displayMaxMinForMonths();
-		//fullData.savingsPotencial();
+		// fullData.getMaxOfYear();
+
+		// fullData.displayMaxMinForMonths();
+		 fullData.savingsPotential();
 	}
 }
-	
-
-
