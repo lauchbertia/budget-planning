@@ -6,11 +6,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.*;
 import java.util.stream.*;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
- * Constructor of Object
+ * This class handles the data
+ * 
+ * @author Nina Lareida
+ * @author Sabrina Boccia
  */
 public class HandleData {
 
@@ -36,7 +37,6 @@ public class HandleData {
 	 * 
 	 * @return String with Name of Month
 	 */
-
 	public String getMonth() {
 		return month;
 	}
@@ -46,7 +46,6 @@ public class HandleData {
 	 * 
 	 * @param month as String
 	 */
-
 	public void setMonth(String month) {
 		this.month = month;
 	}
@@ -56,7 +55,6 @@ public class HandleData {
 	 * 
 	 * @return day as a number (integer)
 	 */
-
 	public int getDay() {
 		return day;
 	}
@@ -66,7 +64,6 @@ public class HandleData {
 	 * 
 	 * @param day
 	 */
-
 	public void setDay(int day) {
 		this.day = day;
 	}
@@ -77,7 +74,6 @@ public class HandleData {
 	 * @return expenses as an boolean value. If expenses are false, then its
 	 *         displayed as income
 	 */
-
 	public Boolean getExpenses() {
 		return expenses;
 	}
@@ -87,7 +83,6 @@ public class HandleData {
 	 * 
 	 * @param expenses
 	 */
-
 	public void setExpenses(Boolean expenses) {
 		this.expenses = expenses;
 	}
@@ -97,7 +92,6 @@ public class HandleData {
 	 * 
 	 * @return value as an double
 	 */
-
 	public double getValue() {
 		return value;
 	}
@@ -107,11 +101,16 @@ public class HandleData {
 	 * 
 	 * @param value
 	 */
-
 	public void setValue(double value) {
 		this.value = value;
 	}
 
+	/**
+	 * shows all Data from the List from the JSON String used GSON Library Container
+	 * for Data see DataContainer-Class
+	 * 
+	 * @return dataList, a List of all the Data
+	 */
 	public List<HandleData> showFullData() {
 		System.out.println("------------------------------------------");
 		System.out.println("------------------ DATEN -----------------");
@@ -131,11 +130,6 @@ public class HandleData {
 	}
 
 	/**
-	 * Displays the sum of the balance monthly.
-	 * 
-	 */
-
-	/**
 	 * Shows the sum of income and expenses of each each month
 	 */
 	public void getSumOfBalanceOfMonth() {
@@ -146,64 +140,48 @@ public class HandleData {
 		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 		List<HandleData> dataList = myObject.getData();
 
-		// LinkedHashMap: keeps the order of months
-		Map<String, Map<Boolean, Double>> monthlySum = new LinkedHashMap<>();
+		// Grouping and sum of data
+		Map<String, Map<Boolean, Double>> monthlySum = dataList.stream().collect(Collectors.groupingBy(
+				HandleData::getMonth, LinkedHashMap::new,
+				Collectors.groupingBy(HandleData::getExpenses, Collectors.summingDouble(HandleData::getValue))));
 
-		for (HandleData item : dataList) {
-			String month = item.getMonth();
-			boolean isExpense = item.getExpenses();
-			double value = item.getValue();
-
-			// calculate (compute) the monthly sums with LinkedHashMap
-			// If the month doesn't exist in the outer map, create a new LinkedHashMap
-			// If the category (expense or income) doesn't exist in the inner map, create a
-			// new entry with the value
-			// If the category already exists, merge the value using Double::sum
-			monthlySum.computeIfAbsent(month, k -> new LinkedHashMap<>()).merge(isExpense, value, Double::sum);
-		}
-
-		// Iterate over the LinkedHashMap to print the results
+		// Iteration and output of results
 		monthlySum.forEach((month, categorySum) -> {
 			System.out.println("------------------------------------------");
 			System.out.println("Monat: " + month);
 			System.out.println("------------------------------------------");
 
-			System.out.println("\tEinkommen: " + categorySum.getOrDefault(false, 0.0));
-			System.out.println("\tAusgaben: " + categorySum.getOrDefault(true, 0.0));
-			System.out.println("");
+			categorySum.forEach((isExpense, value) -> {
+				String category = isExpense ? "Ausgaben" : "Einkommen";
+				System.out.println("\t" + category + ": " + value);
+			});
+
+			System.out.println();
 		});
 	}
 
-	public List<HandleData> getMaxOfYear() {
+	/**
+	 * Gets the highest value of the year - either income or expense.
+	 * 
+	 * @return max value of the year
+	 */
+	public double getMaxOfYear() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- JAHR MAXIMUM --------------");
 		Data data = new Data();
 		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 		List<HandleData> dataList = myObject.getData();
-		double value = 0;
-		double maxValue = 0;
+		Optional<Double> max = dataList.stream().map(HandleData::getValue).reduce(Double::max);
 
-		for (HandleData item : dataList) {
-			value = item.getValue();
+		System.out.println("Das ist der maximum Wert: " + max.orElse(0.0));
 
-			if (value > maxValue) {
-				maxValue = value;
-			}
-		}
-
-		System.out.println("Das ist der maximum Wert: " + maxValue);
-
-		return dataList;
+		return max.orElse(0.0);
 	}
 
 	/**
 	 * Shows the maximum of income and maximum of expenses for every month within
 	 * one year
 	 * 
-	 */
-
-	/**
-	 * Shows the maximum & minimum for each month
 	 */
 	public void displayMaxMinForMonths() {
 		System.out.println("------------------------------------------");
@@ -260,7 +238,11 @@ public class HandleData {
 		});
 	}
 
-	public void savingsPotencial() {
+	/**
+	 * Shows the potential of saving money for every month as String: < 10 "no
+	 * potential" < 200 "little potential" bigger than 200 is great potential
+	 */
+	public void savingsPotential() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- SPARPOTENZIAL -------------");
 		Data data = new Data();
@@ -288,6 +270,12 @@ public class HandleData {
 		monthTotals.forEach((month, total) -> printMonthSummary(month, total));
 	}
 
+	/**
+	 * Prints the potential
+	 * 
+	 * @param month
+	 * @param total
+	 */
 	private void printMonthSummary(String month, double total) {
 		System.out.println("------------------------------------------");
 		System.out.println("Monat: " + month);
@@ -299,14 +287,15 @@ public class HandleData {
 		System.out.println();
 	}
 
+	/**
+	 * gets the appropriate savings potential
+	 * 
+	 * @param total
+	 * @return the potential
+	 */
 	private String getSavingsPotential(double total) {
-	    return Stream.of(
-	            new Object[] { 10.0, "Kein Sparpotenzial" },
-	            new Object[] { 200.0, "Mittel Sparpotenzial" }
-	    )
-	    .filter(array -> total < (Double) array[0])
-	    .map(array -> (String) array[1])
-	    .findFirst()
-	    .orElse("Hohes Sparpotenzial");
+		return Stream.of(new Object[] { 10.0, "Kein Sparpotenzial" }, new Object[] { 200.0, "Mittel Sparpotenzial" })
+				.filter(array -> total < (Double) array[0]).map(array -> (String) array[1]).findFirst()
+				.orElse("Hohes Sparpotenzial");
 	}
 }
