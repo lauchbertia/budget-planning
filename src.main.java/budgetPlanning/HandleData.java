@@ -1,6 +1,10 @@
 package budgetPlanning;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * Constructor of Object
@@ -94,16 +98,8 @@ public class HandleData {
 
 	public void setValue(double value) {
 		this.value = value;
-	}
-	
-	/**
-	 * shows all Data from the List from the JSON String
-	 * used GSON Library
-	 * Container for Data see DataContainer-Class
-	 * 
-	 * @return dataList, a List of all the Data
-	 */
-
+  }
+  
 	public List<HandleData> showFullData() {
 		System.out.println("------------------------------------------");
 		System.out.println("------------------ DATEN -----------------");
@@ -127,61 +123,48 @@ public class HandleData {
 	 * 
 	 */
 
-		public void getSumOfBalanceOfMonth() {
-			System.out.println("------------------------------------------");
-			System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
-		Data data = new Data();
-		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
-		List<HandleData> dataList = myObject.getData();
+	
+	/**
+	 * Shows the sum of income and expenses of each each month
+	 */
+	public void getSumOfBalanceOfMonth() {
+	    System.out.println("------------------------------------------");
+	    System.out.println("----- EINKOMMEN & AUSGABEN PRO MONAT -----");
 
-		String currentMonth = "";
-		double totalIncome = 0;
-		double totalExpenses = 0;
+	    Data data = new Data();
+	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+	    List<HandleData> dataList = myObject.getData();
+	    
+	    // LinkedHashMap: keeps the order of months
+	    Map<String, Map<Boolean, Double>> monthlySum = new LinkedHashMap<>();
 
-		for (HandleData item : dataList) {
-			String month = item.getMonth();
-			double value = item.getValue();
-			boolean isExpense = item.getExpenses();
+	    for (HandleData item : dataList) {
+	        String month = item.getMonth();
+	        boolean isExpense = item.getExpenses();
+	        double value = item.getValue();
 
-			if (!month.equals(currentMonth)) {
-				if (!currentMonth.isEmpty()) {
-					// Print the totals for the previous month
-			        System.out.println("------------------------------------------");
-					System.out.println("Monat: " + currentMonth);
-			        System.out.println("------------------------------------------");
-					System.out.println("\tEinkommen: " + totalIncome);
-					System.out.println("\tAusgaben: " + totalExpenses);
-					System.out.println("");
-				}
+	        // calculate (compute) the monthly sums with LinkedHashMap
+	        // If the month doesn't exist in the outer map, create a new LinkedHashMap
+	        // If the category (expense or income) doesn't exist in the inner map, create a new entry with the value
+	        // If the category already exists, merge the value using Double::sum
+	        monthlySum
+	            .computeIfAbsent(month, k -> new LinkedHashMap<>())
+	            .merge(isExpense, value, Double::sum);
+	    }
 
-				// Reset totals for the new month
-				currentMonth = month;
-				totalIncome = 0;
-				totalExpenses = 0;
-			}
+	    // Iterate over the LinkedHashMap to print the results
+	    monthlySum.forEach((month, categorySum) -> {
+	        System.out.println("------------------------------------------");
+	        System.out.println("Monat: " + month);
+	        System.out.println("------------------------------------------");
 
-			if (isExpense) {
-				totalExpenses += value;
-			} else {
-				totalIncome += value;
-			}
-		}
-
-		// Print the totals for the last month
-        System.out.println("------------------------------------------");
-		System.out.println("Monat: " + currentMonth);
-        System.out.println("------------------------------------------");
-		System.out.println("\tEinkommen: " + totalIncome);
-		System.out.println("\tAusgaben: " + totalExpenses);
+	        System.out.println("\tEinkommen: " + categorySum.getOrDefault(false, 0.0));
+	        System.out.println("\tAusgaben: " + categorySum.getOrDefault(true, 0.0));
+	        System.out.println("");
+	    });
 	}
-		
-		/**
-		 * Gets the highest value of the year - either income or expense.
-		 * 
-		 * @return dataList
-		 */
-
-	public List<HandleData> getMaxOfYear() {
+  
+  public List<HandleData> getMaxOfYear() {
 		System.out.println("------------------------------------------");
 		System.out.println("-------------- JAHR MAXIMUM --------------");
 		Data data = new Data();
@@ -209,142 +192,109 @@ public class HandleData {
 	 */
 
 
+	/**
+	 * Shows the maximum & minimum for each month
+	 */
 	public void displayMaxMinForMonths() {
-		System.out.println("------------------------------------------");
-		System.out.println("------- MAXIMUM & MINIMUM PRO MONAT ------");
+	    System.out.println("------------------------------------------");
+	    System.out.println("------- MAXIMUM & MINIMUM PRO MONAT ------");
 	    Data data = new Data();
 	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
 	    List<HandleData> dataList = myObject.getData();
 
 	    String[] months = {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"};
 
-	    // Initialize arrays to store max and min values for each month
-	    double[] maxIncomeByMonth = new double[12];
-	    double[] minIncomeByMonth = new double[12];
-	    double[] maxExpenseByMonth = new double[12];
-	    double[] minExpenseByMonth = new double[12];
-	    
-	 // Initialize minIncomeByMonth and minExpenseByMonth with high initial values
-	    Arrays.fill(minIncomeByMonth, Double.MAX_VALUE);
-	    Arrays.fill(minExpenseByMonth, Double.MAX_VALUE);
+	    // Map to store statistics (collecting max/ min) for each month
+	    // the statistics map has submaps for each category (expenses -> true, income -> false)
+	    Map<String, Map<Boolean, DoubleSummaryStatistics>> monthStatistics = new HashMap<>();
 
-	    for (HandleData item : dataList) {
+	    // Initialize the map with empty statistics for each month
+	    Arrays.stream(months).forEach(month -> {
+	        Map<Boolean, DoubleSummaryStatistics> statistics = new HashMap<>();
+	        statistics.put(true, new DoubleSummaryStatistics());
+	        statistics.put(false, new DoubleSummaryStatistics());
+	        monthStatistics.put(month, statistics);
+	    });
+
+	    // Calculate statistics (max & min values) for each month
+	    dataList.forEach(item -> {
 	        String month = item.getMonth();
-	        int monthIndex = Arrays.asList(months).indexOf(month);
 	        boolean isExpense = item.getExpenses();
-
 	        double value = item.getValue();
 
-	        // Update max and min values for the specific month
-	        if (!isExpense) {
-	            if (value > maxIncomeByMonth[monthIndex]) {
-	                maxIncomeByMonth[monthIndex] = value;
-	            }
-	            if (value < minIncomeByMonth[monthIndex]) {
-	                minIncomeByMonth[monthIndex] = value;
-	                
-	            }
-	        } else {
-	            if (value > maxExpenseByMonth[monthIndex]) {
-	                maxExpenseByMonth[monthIndex] = value;
-	            }
-	            if (value < minExpenseByMonth[monthIndex]) {
-	                minExpenseByMonth[monthIndex] = value;
-	            }
-	        }
-	    }
+	        // Get the statistics map for the current month
+	        // Map contains statistics (expenses & income) for that month
+	        Map<Boolean, DoubleSummaryStatistics> statistics = monthStatistics.get(month);
+	        // Updates the statistics (for current month & expense category)
+	        // accept(): updates max/ min value for income/ expense
+	        statistics.get(isExpense).accept(value);
+	    });
 
-	    // Output the results for each month
-	    for (int i = 0; i < 12; i++) {
-	        String month = months[i];
+	    // Print the results for each month
+	    Arrays.stream(months).forEach(month -> {
 	        System.out.println("------------------------------------------");
 	        System.out.println(month);
 	        System.out.println("------------------------------------------");
+
 	        System.out.println("\tEinkommen");
-	        System.out.println("\t \tmaximum: " + maxIncomeByMonth[i]);
-	        System.out.println("\t \tminimum: " + minIncomeByMonth[i]);
-        	System.out.println("\tAusgaben");
-	        System.out.println("\t \tmaximum: " + maxExpenseByMonth[i]);
-	        System.out.println("\t \tminimum: " + minExpenseByMonth[i]);
-	        System.out.println("");
-		}
+	        System.out.println("\t \tmaximum: " + monthStatistics.get(month).get(false).getMax());
+	        System.out.println("\t \tminimum: " + monthStatistics.get(month).get(false).getMin());
+
+	        System.out.println("\tAusgaben");
+	        System.out.println("\t \tmaximum: " + monthStatistics.get(month).get(true).getMax());
+	        System.out.println("\t \tminimum: " + monthStatistics.get(month).get(true).getMin());
+
+	        System.out.println();
+	    });
 	}
 	
 	
-	/**
-	 * Shows the potential of saving money for every month as String:
-	 *  < 10 "no potential"
-	 * 	< 200 "little potential"
-	 * 	bigger than 200 is great potential
-	 */
-	
 	public void savingsPotencial() {
-		System.out.println("------------------------------------------");
-		System.out.println("-------------- SPARPOTENZIAL -------------");
-		Data data = new Data();
-		DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
-		List<HandleData> dataList = myObject.getData();
+	    System.out.println("------------------------------------------");
+	    System.out.println("-------------- SPARPOTENZIAL -------------");
+	    Data data = new Data();
+	    DataContainer myObject = data.gson.fromJson(data.jsonString, DataContainer.class);
+	    List<HandleData> dataList = myObject.getData();
 
-		String currentMonth = "";
-		double totalIncome = 0;
-		double totalExpenses = 0;
-		double total = 0;
+	    // Store the monthly totals 
+	    // preserve the order of the months with LinkedHashMap
+	    Map<String, Double> monthTotals = new LinkedHashMap<>();
 
-		for (HandleData item : dataList) {
-			String month = item.getMonth();
-			double value = item.getValue();
-			boolean isExpense = item.getExpenses();
+	    // Calculate the monthly totals 
+	    dataList.forEach(item -> {
+	        String month = item.getMonth();
+	        double value = item.getValue();
+	        boolean isExpense = item.getExpenses();
 
-			if (!month.equals(currentMonth)) {
-				if (!currentMonth.isEmpty()) {
-					// Print the totals for the previous month
-					System.out.println("------------------------------------------");
-					System.out.println("Monat: " + currentMonth);
-					System.out.println("------------------------------------------");
-					System.out.println("\tEinkommen: " + totalIncome);
-					System.out.println("\tAusgaben: " + totalExpenses);
-					
-					total = totalIncome - totalExpenses;
-					System.out.println("\tDifferenz: " + total);
-					
-					if (total < 10) {
-						System.out.println("\t \t --> Kein Sparpotenzial");
-					} else if (total < 200) {
-						System.out.println("\t \t --> Mittel Sparpotenzial");
-					} else {
-						System.out.println("\t \t --> Hohes Sparpotenzial");
-					}
-					
-				}
+	        // initialize a monthly total
+	        monthTotals.putIfAbsent(month, 0.0);
 
-				// Reset totals for the new month
-				currentMonth = month;
-				totalIncome = 0;
-				totalExpenses = 0;
-			}
+	        // Update the total for the current month
+	        monthTotals.compute(month, (key, total) -> isExpense ? total - value : total + value);
+	    });
 
-			if (isExpense) {
-				totalExpenses += value;
-			} else {
-				totalIncome += value;
-			}
-		}
+	    // Print the summary for each month
+	    monthTotals.forEach((month, total) -> printMonthSummary(month, total));
+	}
 
-		// Print the totals for the last month
-		System.out.println("------------------------------------------");
-		System.out.println("Monat: " + currentMonth);
-		System.out.println("------------------------------------------");
-		System.out.println("\tEinkommen: " + totalIncome);
-		System.out.println("\tAusgaben: " + totalExpenses);
-		total = totalIncome - totalExpenses;
-		System.out.println("\tDifferenz: " + total);
-		if (total < 10) {
-			System.out.println("\t \t --> Kein Sparpotenzial");
-		} else if (total < 200) {
-			System.out.println("\t \t --> Mittel Sparpotenzial");
-		} else {
-			System.out.println("\t \t --> Hohes Sparpotenzial");
-		}
-		System.out.println("");
+	private void printMonthSummary(String month, double total) {
+	    System.out.println("------------------------------------------");
+	    System.out.println("Monat: " + month);
+	    System.out.println("------------------------------------------");
+	    System.out.println("\tEinkommen: " + Math.max(total, 0));
+	    System.out.println("\tAusgaben: " + Math.max(-total, 0));
+	    System.out.println("\tDifferenz: " + total);
+	    System.out.println("\t \t --> " + getSavingsPotencial(total));
+	    System.out.println();
+	}
+
+	private String getSavingsPotencial(double total) {
+	    if (total < 10) {
+	        return "Kein Sparpotenzial";
+	    } else if (total < 200) {
+	        return "Mittel Sparpotenzial";
+	    } else {
+	        return "Hohes Sparpotenzial";
+	    }
 	}
 }
